@@ -22,7 +22,7 @@ app.use(passport.initialize());
 
 // Logging Middleware
 const logRequest = (req, res, next) => {
-  console.log(`[${new Date().toLocaleString()}] Request Made to: ${req.originalUrl}`);
+ //console.log(`[${new Date().toLocaleString()}] Request Made to: ${req.originalUrl}`);
   next();
 };
 
@@ -36,7 +36,7 @@ passport.use(new LocalStrategy(async (username, password, done) => {
       return done(null, false, { message: 'Incorrect username.' });
     }
 
-    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    const isPasswordMatch = await user.comparePassword(password);
     if (isPasswordMatch) {
       return done(null, user);
     } else {
@@ -55,7 +55,7 @@ app.get('/',function (req, res){
 });
 
 app.use('/menu', MenuItemRoutes);
-app.use('/person',LocalAuthMiddleware, PersonRoutes);
+app.use('/person',LocalAuthMiddleware,PersonRoutes);
 
 // Start Server
 app.listen(PORT, () => {
