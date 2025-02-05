@@ -5,12 +5,14 @@ const Person = require('./models/person');
 const Menu = require('./models/menu');
 const app = express();
 const db = require('./db');
+require('dotenv').config();
 
 app.use(bodyParser.json());
 
 app.get('/', function (req, res) {
   res.send('Welcome to my hotel... How can I help you? We have a lot on our list.');
 });
+const PORT = process.env.PORT || 9000;
 
 const MenuItemRoutes=require('./routes/MenuItemRoutes')
 app.use('/menu',MenuItemRoutes)
@@ -18,6 +20,6 @@ app.use('/menu',MenuItemRoutes)
 const PersonRoutes = require('./routes/PersonRoutes')
 app.use('/person',PersonRoutes)
 
-app.listen(9000, () => {
+app.listen(PORT, () => {
   console.log('Server running on port 9000');
 });
