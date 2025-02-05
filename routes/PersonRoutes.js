@@ -6,14 +6,13 @@ const Person=  require('../models/person')
 // POST route for Person
 router.post('/', async (req, res) => {
     try {
-      const { name, age, work, mobile, email, address, salary } = req.body;
+      const { name, age, work, mobile, email, address, salary,password,username } = req.body;
 
-      // Check if required fields are missing
-      if (!name || !work || !mobile || !email || !address || !salary) {
+      if (!name || !work || !mobile || !email || !address || !salary || !password || !username) {
         return res.status(400).json({ error: "All required fields must be provided" });
       }
 
-      const newPerson = new Person({ name, age, work, mobile, email, address, salary });
+      const newPerson = new Person({ name, age, work, mobile, email, address, salary, password, username});
 
       const response = await newPerson.save();
       console.log("Data saved successfully");

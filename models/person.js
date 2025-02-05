@@ -7,8 +7,10 @@
       mobile: { type: Number, required: true },
       email: { type: String, required: true, unique: true },
       address: { type: String, required: true },
-      salary: { type: Number, required: true }
-    });
+      salary: { type: Number, required: true },
+      username:{type:String,required:true},
+      password:{type:String,required:true}
+      });
 
     const Person = mongoose.model('Person', personSchema);
 

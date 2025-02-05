@@ -1,25 +1,63 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const bcrypt = require('bcrypt');
+const dotenv = require('dotenv');
 const Person = require('./models/person');
 const Menu = require('./models/menu');
-const app = express();
 const db = require('./db');
-require('dotenv').config();
+const MenuItemRoutes = require('./routes/MenuItemRoutes');
+const PersonRoutes = require('./routes/PersonRoutes');
 
-app.use(bodyParser.json());
+dotenv.config();
 
-app.get('/', function (req, res) {
-  res.send('Welcome to my hotel... How can I help you? We have a lot on our list.');
-});
+const app = express();
 const PORT = process.env.PORT || 9000;
 
-const MenuItemRoutes=require('./routes/MenuItemRoutes')
-app.use('/menu',MenuItemRoutes)
+// Middleware
+app.use(bodyParser.json());
+app.use(passport.initialize());
 
-const PersonRoutes = require('./routes/PersonRoutes')
-app.use('/person',PersonRoutes)
+// Logging Middleware
+const logRequest = (req, res, next) => {
+  console.log(`[${new Date().toLocaleString()}] Request Made to: ${req.originalUrl}`);
+  next();
+};
 
+app.use(logRequest);
+
+// Passport Local Strategy
+passport.use(new LocalStrategy(async (username, password, done) => {
+  try {
+    const user = await Person.findOne({ username });
+    if (!user) {
+      return done(null, false, { message: 'Incorrect username.' });
+    }
+
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    if (isPasswordMatch) {
+      return done(null, user);
+    } else {
+      return done(null, false, { message: 'Invalid password.' });
+    }
+  } catch (err) {
+    return done(err);
+  }
+}));
+
+// Routes
+
+const LocalAuthMiddleware=passport.authenticate('local',{session:false})    ;
+app.get('/',function (req, res){
+  res.send('Welcome to my hotel');
+});
+
+app.use('/menu', MenuItemRoutes);
+app.use('/person',LocalAuthMiddleware, PersonRoutes);
+
+// Start Server
 app.listen(PORT, () => {
-  console.log('Server running on port 9000');
+  console.log(`Server running on port ${PORT}`);
 });

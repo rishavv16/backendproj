@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 require('dotenv').config(); // Ensure dotenv is installed
-const mongoURL = process.env.mongoURL; 
+mongoURL="mongodb+srv://raidmachine9513:xfYsnpAHSSORMu4l@cluster0.arg0i.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 mongoose.connect(mongoURL, {
   useNewUrlParser: true,
